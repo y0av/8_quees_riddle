@@ -1,14 +1,20 @@
-# Create React App
+# 8 queens riddle
 
-This directory is a brief example of a [Create React App](https://github.com/facebook/create-react-app) site that can be deployed to Vercel with zero configuration.
+A playable game of the [8 queens riddle](https://en.wikipedia.org/wiki/Eight_queens_puzzle)
 
 ## Deploy Your Own
 
 Deploy your own Create React App project with Vercel.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/vercel/tree/main/examples/create-react-app&template=create-react-app)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/y0av/8_quees_riddle/)
 
 _Live Example: https://create-react-template.vercel.app/_
+
+## Demo
+
+You can demo the application at [8queesriddle.vercel.app](https://8queesriddle.vercel.app/).
+
+![Screenshot](public/screenshot.png)
 
 ## Available Scripts
 
