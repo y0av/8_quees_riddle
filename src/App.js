@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const EightQueensGame = () => {
   const [board, setBoard] = useState(Array(8).fill(null).map(() => Array(8).fill(0)));
@@ -67,26 +65,35 @@ const EightQueensGame = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <h1 className="text-3xl font-bold mb-4">Eight Queens Puzzle</h1>
-      <div className="mb-4">
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '1rem', backgroundColor: '#f3f4f6' }}>
+      <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', marginBottom: '1rem' }}>Eight Queens Puzzle</h1>
+      <div style={{ marginBottom: '1rem' }}>
         <button
           onClick={resetGame}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          style={{ backgroundColor: '#3b82f6', color: 'white', fontWeight: 'bold', padding: '0.5rem 1rem', borderRadius: '0.25rem', cursor: 'pointer' }}
         >
           Reset Game
         </button>
       </div>
-      <div className="grid grid-cols-8 gap-1 mb-4">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gap: '2px', marginBottom: '1rem' }}>
         {board.map((row, rowIndex) =>
           row.map((cell, colIndex) => (
             <button
               key={`${rowIndex}-${colIndex}`}
               onClick={() => handleCellClick(rowIndex, colIndex)}
-              className={`w-12 h-12 flex items-center justify-center text-2xl font-bold
-                ${cell === 1 ? 'bg-purple-500 text-white' : 'bg-white'}
-                ${gameWon ? 'cursor-not-allowed' : 'hover:bg-gray-200'}
-                border border-gray-300`}
+              style={{
+                width: '3rem',
+                height: '3rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.5rem',
+                fontWeight: 'bold',
+                backgroundColor: cell === 1 ? '#8b5cf6' : 'white',
+                color: cell === 1 ? 'white' : 'black',
+                border: '1px solid #d1d5db',
+                cursor: gameWon ? 'not-allowed' : 'pointer',
+              }}
             >
               {cell === 1 ? '♛' : ''}
             </button>
@@ -94,13 +101,11 @@ const EightQueensGame = () => {
         )}
       </div>
       {message && (
-        <Alert>
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Game Status</AlertTitle>
-          <AlertDescription>{message}</AlertDescription>
-        </Alert>
+        <div style={{ backgroundColor: '#e5e7eb', borderRadius: '0.25rem', padding: '1rem', marginBottom: '1rem' }}>
+          <strong>Game Status:</strong> {message}
+        </div>
       )}
-      <p className="text-sm text-gray-600 mt-4">
+      <p style={{ fontSize: '0.875rem', color: '#4b5563', marginTop: '1rem' }}>
         Click on a cell to place or remove a queen. Try to place 8 queens so that no two queens threaten each other.
       </p>
     </div>
