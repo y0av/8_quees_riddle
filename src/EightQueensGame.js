@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 const Confetti = React.memo(() => {
     const confettiElements = useMemo(() => {
         const elements = [];
-        const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+        const colors = ['#FFB3BA', '#BAFFC9', '#BAE1FF', '#FFFFBA', '#FFDFBA', '#E0BBE4']; // Pastel colors
 
         for (let i = 0; i < 100; i++) {
             const style = {
@@ -42,6 +42,7 @@ const EightQueensGame = () => {
     const [attackingQueens, setAttackingQueens] = useState([]);
     const [queenCount, setQueenCount] = useState(0);
     const [showConfetti, setShowConfetti] = useState(false);
+    const [animatingCells, setAnimatingCells] = useState([]);
 
     const handleCellClick = useCallback((row, col) => {
         setBoard(prevBoard => {
@@ -49,18 +50,32 @@ const EightQueensGame = () => {
             if (newBoard[row][col] === 1) {
                 newBoard[row][col] = 0;
                 setQueenCount(prevCount => prevCount - 1);
-            } else if (queenCount < 8) {
-                newBoard[row][col] = 1;
-                setQueenCount(prevCount => prevCount + 1);
+                setAnimatingCells(prev => [...prev, { row, col, type: 'remove' }]);
             } else {
-                setMessage("You can't place more than 8 queens on the board.");
-                return prevBoard;
+                const currentQueenCount = newBoard.flat().filter(cell => cell === 1).length;
+                if (currentQueenCount < 8) {
+                    newBoard[row][col] = 1;
+                    setQueenCount(prevCount => prevCount + 1);
+                    setAnimatingCells(prev => [...prev, { row, col, type: 'add' }]);
+                } else {
+                    setMessage("You can't place more than 8 queens on the board.");
+                    return prevBoard;
+                }
             }
             setMessage('');
             setAttackingQueens([]);
             return newBoard;
         });
-    }, [queenCount]);
+    }, []);
+
+    useEffect(() => {
+        if (animatingCells.length > 0) {
+            const timer = setTimeout(() => {
+                setAnimatingCells([]);
+            }, 300);
+            return () => clearTimeout(timer);
+        }
+    }, [animatingCells]);
 
     const resetGame = useCallback(() => {
         setBoard(Array(8).fill(null).map(() => Array(8).fill(0)));
@@ -68,6 +83,7 @@ const EightQueensGame = () => {
         setAttackingQueens([]);
         setQueenCount(0);
         setShowConfetti(false);
+        setAnimatingCells([]);
     }, []);
 
     const findAttackingQueens = useCallback((queens) => {
@@ -171,15 +187,34 @@ const EightQueensGame = () => {
                                 justifyContent: 'center',
                                 fontSize: 'clamp(1rem, 4vw, 1.5rem)',
                                 fontWeight: 'bold',
-                                backgroundColor: cell === 1
-                                    ? (attackingQueens.some(([r, c]) => r === rowIndex && c === colIndex) ? '#ef4444' : '#8b5cf6')
-                                    : ((rowIndex + colIndex) % 2 === 0 ? '#f3f4f6' : '#d1d5db'),
-                                color: cell === 1 ? 'white' : 'black',
+                                backgroundColor: ((rowIndex + colIndex) % 2 === 0 ? '#f3f4f6' : '#d1d5db'),
                                 border: '1px solid #d1d5db',
                                 cursor: 'pointer',
+                                position: 'relative',
+                                overflow: 'hidden',
                             }}
                         >
-                            {cell === 1 ? '♛' : ''}
+                            {cell === 1 && (
+                                <div style={{
+                                    width: '80%',
+                                    height: '80%',
+                                    backgroundColor: attackingQueens.some(([r, c]) => r === rowIndex && c === colIndex) ? '#ef4444' : '#8b5cf6',
+                                    WebkitMask: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 45 45'%3E%3Cg fill='%23000' fill-rule='evenodd' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 12a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM24.5 7.5a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM41 12a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM16 8.5a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM33 9a2 2 0 1 1-4 0 2 2 0 1 1 4 0z'/%3E%3Cpath d='M9 26c8.5-1.5 21-1.5 27 0l2-12-7 11V11l-5.5 13.5-3-15-3 15-5.5-14V25L7 14l2 12zM9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z' stroke-linecap='butt'/%3E%3Cpath d='M11.5 30c3.5-1 18.5-1 22 0M12 33.5c6-1 15-1 21 0' fill='none'/%3E%3C/g%3E%3C/svg%3E\")",
+                                    WebkitMaskSize: 'contain',
+                                    WebkitMaskRepeat: 'no-repeat',
+                                    WebkitMaskPosition: 'center',
+                                    mask: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 45 45'%3E%3Cg fill='%23000' fill-rule='evenodd' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 12a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM24.5 7.5a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM41 12a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM16 8.5a2 2 0 1 1-4 0 2 2 0 1 1 4 0zM33 9a2 2 0 1 1-4 0 2 2 0 1 1 4 0z'/%3E%3Cpath d='M9 26c8.5-1.5 21-1.5 27 0l2-12-7 11V11l-5.5 13.5-3-15-3 15-5.5-14V25L7 14l2 12zM9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z' stroke-linecap='butt'/%3E%3Cpath d='M11.5 30c3.5-1 18.5-1 22 0M12 33.5c6-1 15-1 21 0' fill='none'/%3E%3C/g%3E%3C/svg%3E\")",
+                                    maskSize: 'contain',
+                                    maskRepeat: 'no-repeat',
+                                    maskPosition: 'center',
+                                    animation: animatingCells.some(ac => ac.row === rowIndex && ac.col === colIndex && ac.type === 'add')
+                                        ? 'queenAppear 0.3s ease-out'
+                                        : animatingCells.some(ac => ac.row === rowIndex && ac.col === colIndex && ac.type === 'remove')
+                                            ? 'queenDisappear 0.3s ease-out'
+                                            : 'none',
+                                }}
+                                />
+                            )}
                         </button>
                     ))
                 )}
@@ -198,6 +233,14 @@ const EightQueensGame = () => {
         @keyframes fall {
           0% { transform: translateY(-20px) rotate(0deg); }
           100% { transform: translateY(100vh) rotate(720deg); }
+        }
+        @keyframes queenAppear {
+          0% { transform: scale(0); opacity: 0; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes queenDisappear {
+          0% { transform: scale(1); opacity: 1; }
+          100% { transform: scale(0); opacity: 0; }
         }
       `}</style>
         </div>
